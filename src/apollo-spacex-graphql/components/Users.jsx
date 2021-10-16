@@ -59,7 +59,7 @@ export default function UpComingLaunches() {
             okText="Yes"
             cancelText="No"
           >
-            <a href="#">delete</a>
+            <a href="#delete">delete</a>
           </Popconfirm>
         </Space>
       ),
