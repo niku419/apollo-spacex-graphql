@@ -1,46 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Divider, Layout } from 'antd';
-import { gql, useMutation, useQuery } from "@apollo/client"
+import { Form, Input, Button, Divider, Layout, Breadcrumb } from 'antd';
+import { useMutation, useQuery } from "@apollo/client"
 import { useParams, Redirect } from 'react-router-dom'
-import { Container } from 'react-bootstrap'
+import { GET_USER } from './graphql/queries/queries'
+import { EDIT_USER, ADD_USER } from './graphql/mutations/mutations';
+import LoaderComponent from '../components/LoaderComponent';
 
 export default function UserForm() {
   const [form] = Form.useForm()
   const { userId } = useParams()
-  const GET_USER = gql`
-    query GetUser($_eq: uuid){
-      users(where: {id: {_eq: $_eq}}){
-        name
-        id
-        rocket 
-        twitter
-      }
-    }
-  `
-  const ADD_USER = gql`
-    mutation insert_users($name: String, $rocket: String, $twitter: String) {
-      insert_users(objects: { name: $name, rocket: $rocket, twitter: $twitter }) {
-        returning {
-          name
-          id
-          rocket
-          twitter
-        }
-      }
-    }
-  `
-  const EDIT_USER = gql`
-    mutation update_users($_eq: uuid, $name: String, $rocket: String, $twitter: String) {
-      update_users(where : { id: { _eq: $_eq }}, _set: {name: $name, rocket: $rocket, twitter: $twitter }){
-        returning{
-          id
-          name
-          rocket
-          twitter
-        }
-      }
-    }
-  `
   const { loading, error, data } = useQuery(GET_USER, { variables: { _eq: userId } })
   const [editUser ] = useMutation(EDIT_USER)
   const [addUser ] = useMutation(ADD_USER)
@@ -67,10 +35,20 @@ export default function UserForm() {
     }
   }, [data, userId])
 
-  if (loading) return 'getting user details';
+  if (loading) return (
+    <LoaderComponent/>
+  );
   if (error) return `error! ${error.message}`
   return (
-    <Container fluid>
+    <div className="mar">
+      <Breadcrumb>
+        <Breadcrumb.Item>
+          <a href='/users'>Users</a>
+        </Breadcrumb.Item>
+        <Breadcrumb.Item>
+          {userId ? data?.users[0]?.name : 'Create User'}
+        </Breadcrumb.Item>
+      </Breadcrumb>
       <Layout>
         {redirect && <Redirect to='/users'/>}
         <Layout.Content>
@@ -122,6 +100,6 @@ export default function UserForm() {
         </Layout.Content>
         <Divider/>
       </Layout>
-    </Container>
+    </div>
   )
 }
