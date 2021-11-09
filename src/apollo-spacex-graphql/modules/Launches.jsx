@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useQuery } from "@apollo/client"
-import { Card, Row, Col, Pagination } from 'antd'
+import { Card, Row, Col, Pagination, Breadcrumb } from 'antd'
 import LoaderCardComponent from '../components/LoaderCardComponent'
 import { GET_LAUNCHES, TOTAL_LAUNCH_COUNT } from './graphql/queries/queries'
+import { routes } from '../common/constants'
 
 export default function Launches() {
   const [offset, setOffset] = useState(0)
@@ -45,15 +46,21 @@ export default function Launches() {
  if (error) return <p>Error {JSON.stringify(error)}</p>;
   return (
     <div className="mar">
+      <Breadcrumb>
+        <Breadcrumb.Item>
+          <a href={routes.LAUNCHES}>Launches</a>
+        </Breadcrumb.Item>
+      </Breadcrumb>
       <div className="heading"><h1>Launches</h1></div>
-      <Row>
+      <Row wrap={true}>
         {((tableData.launches && tableData.launches.length>0) || data.launches.length> 0 )&& 
           ((tableData.launches && tableData.launches.length>0) ? tableData : data ).launches.map(launch => (
-            <Col span={8} key={launch.id}>
+            <Col span={8} key={launch.id} xs={{ span: 24 }} sm={{ span: 24 }} md={{ span: 12 }} lg={{ span: 8 }}>
               <a href={`launches/${launch.id}`}>
-                <Card loading={loading} key={launch.id} className="border">
-                  <h3>{launch.mission_name}</h3>
+                <Card hoverable loading={loading} key={launch.id} className="border card-hover">
+                  <div className="heading"><h3>{launch.mission_name}</h3></div>
                   <Card.Meta
+                    className="mar"
                     description={launch.details}
                   />
                 </Card>

@@ -151,7 +151,23 @@ export const GET_USERS = gql`
     }
   }
 `
-
+export const NEW_QUERY = gql`
+  query users($offset: Int, $limit: Int, $search: String) {
+    users(
+      order_by: { timestamp: desc }
+      limit: $limit
+      offset: $offset
+      where: {
+        _or: [{ name: { _ilike: $search } }, { rocket: { _ilike: $search } }] 
+      }
+    ) {
+        id
+        name
+        rocket
+    }
+  }
+`
+// name: { _ilike: $searchname }
 // const FILTER_ROCKETNAME = gql`
   //   query getusername($_ilike: String) {
   //     users(where: {rocket: {_ilike: $_ilike}}){

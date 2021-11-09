@@ -1,20 +1,26 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useQuery, useMutation } from "@apollo/client"
-import { Space, message, Popconfirm, Input, Button, Form, Pagination } from 'antd'
-import { GET_USERS, GET_DATA_COUNT } from './graphql/queries/queries'
+import { Space, message, Popconfirm, Input, Button, Form, Pagination, Breadcrumb } from 'antd'
+import { GET_USERS, GET_DATA_COUNT, NEW_QUERY } from './graphql/queries/queries'
 import { DELETE_USER } from './graphql/mutations/mutations'
 import LoaderComponent from '../components/LoaderComponent'
 import CommonTable from '../components/CommonTable'
 import { client } from '../Apollo'
+import { routes } from '../common/constants'
 
 export default function Users() {
-  const [nameSearch, setNameSearch] = useState("")
-  const [rocketSearch, setRocketSearch] = useState("")
+  const totalCountData = useQuery(GET_DATA_COUNT)
+  
+  const [search, setSearch] = useState("")
+  // const [nameSearch, setNameSearch] = useState("")
+  // const [rocketSearch, setRocketSearch] = useState("")
+  let totalCount
   const [form] = Form.useForm()
   const [tableData, setTableData] = useState([])
   const [page, setPage] = useState(1)
   const [itemsPerPage, setItemsPerPage] = useState(10)
-  
+  const [count, setCount] = useState(totalCount)  
+
   const { loading, error, data, refetch, fetchMore } = useQuery(GET_USERS, {
     variables: {
       limit: itemsPerPage
@@ -22,37 +28,57 @@ export default function Users() {
     fetchPolicy: "network-only"
   })
   const [deleteUser] = useMutation(DELETE_USER)
-  const totalCountData = useQuery(GET_DATA_COUNT)
-  let totalCount = !totalCountData.loading && totalCountData.data.users.length
-  function rocketFilter(e){
-    setRocketSearch(e.target.value)
-    let temp = "%"
-    let searchText = temp.concat(e.target.value, temp)
-    client.query({
-      query: GET_USERS,
-      variables: {
-        _similar: searchText 
-      }
-    }).then(res => setTableData(res.data.users))
-    totalCountData.refetch()
-  }
-  function usernameFilter(e){
-    setNameSearch(e.target.value)
+  useEffect(() => {
+    totalCount = !totalCountData.loading && totalCountData.data.users.length
+  }, [])
+  // function rocketFilter(e){
+  //   setRocketSearch(e.target.value)
+  //   let temp = "%"
+  //   let searchText = temp.concat(e.target.value, temp)
+  //   client.query({
+  //     query: GET_USERS,
+  //     variables: {
+  //       _similar: searchText 
+  //     }
+  //   }).then(res => setTableData(res.data.users))
+  //   totalCountData.refetch()
+  // }
+  // function usernameFilter(e){
+  //   setNameSearch(e.target.value)
+  //   let temp = "%"
+  //   let searchText = temp.concat(e.target.value, temp)
+  //   console.log(searchText)
+  //   client.query({
+  //     query: GET_USERS,
+  //     variables: {
+  //       _ilike: searchText
+  //     }
+  //   }).then(res => {
+  //     setTableData(res.data.users)
+  //     setCount(res.data.users.length)
+  //   })
+  //   totalCountData.refetch()
+  // }
+  function filter(e){
+    setSearch(e.target.value)
     let temp = "%"
     let searchText = temp.concat(e.target.value, temp)
     console.log(searchText)
     client.query({
-      query: GET_USERS,
+      query: NEW_QUERY,
       variables: {
-        _ilike: searchText
+        search: searchText,
+        limit: itemsPerPage
       }
-    }).then(res => setTableData(res.data.users))
-    totalCountData.refetch()
+    }).then(res => {
+      setTableData(res.data.users)
+      setCount(res.data.users.length)
+    })
   }
   function confirm(_eq) {
     deleteUser({ variables: { _eq } })
     refetch()
-    totalCountData.refetch()
+    totalCountData.refetch().then(res => setCount(res.data.users.length))
     message.success('user deleted!')
   }
   function cancel(e) {
@@ -63,15 +89,20 @@ export default function Users() {
     console.log(pageNum, pageSize)
     setItemsPerPage(pageSize)
     setPage(pageNum)
-    fetchMore({variables: {limit: pageSize, offset: (pageNum-1)*pageSize}}).then(res => setTableData(res.data.users))
-    totalCountData.refetch()
+    fetchMore({variables: {limit: pageSize, offset: (pageNum-1)*pageSize}})
+    .then(res => {
+      setTableData(res.data.users)
+    })
+    totalCountData.refetch().then(res => setCount(res.data.users.length))
   }
   function handleSizeChange(current, size){
     console.log(current, size)
     setItemsPerPage(size)
     setPage(current)
-    fetchMore({variables: {limit: size, offset: (current-1)*size}}).then(res => setTableData(res.data.users))
-    totalCountData.refetch()
+    fetchMore({variables: {limit: size, offset: (current-1)*size}}).then(res => {
+      setTableData(res.data.users)
+    })
+    totalCountData.refetch().then(res => setCount(res.data.users.length))
   }
   const columns = [
     {
@@ -104,8 +135,11 @@ export default function Users() {
     },
   ];
   if(loading){  
-    return (  
-      <LoaderComponent/>
+    return ( 
+      <div className="center">
+        <LoaderComponent/>
+      </div> 
+      
     )
   }
   if(error){
@@ -115,11 +149,17 @@ export default function Users() {
   }  
   return (
     <div className="mar">
-      <div className="heading"><h1>Users</h1></div>
+      <Breadcrumb>
+        <Breadcrumb.Item>
+          <a href={routes.USERS}>Users</a>
+        </Breadcrumb.Item>
+      </Breadcrumb>
+      <div className="heading"><h1>{tableData.length>0 ? totalCount : count} Users</h1></div>
       <div className="flex-between">
-        <div>
-          <Button variant="primary" href="/users/create">Create User</Button>
+        <div className="pad">
+          <Button type="primary" href="/users/create">Create User</Button>
         </div>
+        <div className="center">
         <Form
           form={form}
           layout="inline"
@@ -128,20 +168,31 @@ export default function Users() {
             required 
           >
             <Input 
+              placeholder="Search"
+              value={search} 
+              onChange={filter}
+            />
+          </Form.Item>
+          {/* <Form.Item  
+            required 
+          >
+            <Input 
               placeholder="Name"
               value={nameSearch} 
               onChange={usernameFilter}
             />
-          </Form.Item>
-          <Form.Item
+          </Form.Item> */}
+          {/* <Form.Item
           >
             <Input 
               placeholder="Rocket Name"
               value={rocketSearch} 
               onChange={rocketFilter}
             />
-          </Form.Item>
+          </Form.Item> */}
         </Form>
+        </div>
+        
       </div>
       <div>
         <CommonTable 
@@ -149,7 +200,7 @@ export default function Users() {
           columns={columns} 
           pagination={false} 
         />
-        <div className="flex-end">
+        <div className="flex-end pad">
           <Pagination 
             current={page} 
             pageSizeOptions={[1,5,10,20]} 
@@ -157,7 +208,7 @@ export default function Users() {
             showSizeChanger={true} 
             onChange={handlePageChange} 
             pageSize={itemsPerPage} 
-            total={totalCount} 
+            total={data.users.length>0 ? totalCount : count} 
           />
         </div>
       </div>

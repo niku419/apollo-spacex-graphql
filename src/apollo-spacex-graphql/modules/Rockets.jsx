@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useQuery } from "@apollo/client"
-import { Card, Row, Col, Pagination } from 'antd'
+import { Card, Row, Col, Pagination, Breadcrumb } from 'antd'
 import { GET_ROCKETS, TOTAL_ROCKET_COUNT } from './graphql/queries/queries'
 import LoaderCardComponent from '../components/LoaderCardComponent'
+import { routes } from '../common/constants'
 
 export default function Launches() {
   const [offset, setOffset] = useState(0)
@@ -33,13 +34,18 @@ export default function Launches() {
  if (error) return <p>Error {JSON.stringify(error)}</p>;
   return (
     <div className="mar">
+      <Breadcrumb>
+        <Breadcrumb.Item>
+          <a href={routes.ROCKETS}>Rockets</a>
+        </Breadcrumb.Item>
+      </Breadcrumb>
       <div className="heading"><h1>Rockets</h1></div>
       <Row>
         {data.rockets.length > 0 && 
           data.rockets.map(rocket => (
-            <Col span={8} key={rocket.id}>
+            <Col span={8} key={rocket.id} xs={{ span: 24 }} sm={{ span: 24 }} md={{ span: 12 }} lg={{ span: 8 }}>
               <a href={`rockets/${rocket.id}`}>
-                <Card loading={loading} key={rocket.id} className="border">
+                <Card hoverable loading={loading} key={rocket.id} className="border card-hover">
                   <h3>{rocket.name}</h3>
                   <Card.Meta
                     description={rocket.description}

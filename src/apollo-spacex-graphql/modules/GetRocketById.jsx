@@ -24,22 +24,24 @@ export default function GetLaunchById() {
           {data.rocket.name}
         </Breadcrumb.Item>
       </Breadcrumb>
-      <Row className="center mar">
-        <div className="heading"><h1>Rocket by ID</h1></div>
-        <div>
-          <Card loading={loading}>
-            <h2>{data.rocket.name} by {data.rocket.company} from {data.rocket.country}</h2>
-            <div>{data.rocket.description}</div>
-            <div>Boosters: {data.rocket.boosters}</div>
-            <div>Engines: {data.rocket.engines.engines_loss_max || "null"}</div>
-            <div>Diameter: {data.rocket.diameter.meters}</div>
-            <div>Weight: {data.rocket.mass.kg}kg</div>
-            <div>Height: {data.rocket.height.meters} m</div>
-            <div> {data.rocket.landing_legs.number} landing legs made with {data.rocket.landing_legs.material || "null"}</div>
-            <div>Cost: {data.rocket.cost_per_launch}</div>
-          </Card>
-        </div>
-      </Row>
+      <div className="byID">
+        <Row className="center mar">
+          <div className="heading"><h1>Rocket by ID</h1></div>
+          <div>
+            <Card loading={loading}>
+              <div className="heading"><h3>{data.rocket.name} by {data.rocket.company} from {data.rocket.country}</h3></div>
+              <div>{data.rocket.description}</div>
+              <div>Boosters: {data.rocket.boosters}</div>
+              <div>Engines: {data.rocket.engines.engines_loss_max || "null"}</div>
+              <div>Diameter: {data.rocket.diameter.meters}</div>
+              <div>Weight: {data.rocket.mass.kg}kg</div>
+              <div>Height: {data.rocket.height.meters} m</div>
+              <div> {data.rocket.landing_legs.number} landing legs made with {data.rocket.landing_legs.material || "null"}</div>
+              <div>Cost: {data.rocket.cost_per_launch}</div>
+            </Card>
+          </div>
+        </Row>
+      </div>
     </div>
   ) 
 }

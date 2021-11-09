@@ -11,7 +11,7 @@ import GetUpComingLaunchById from './GetUpComingLaunchById'
 import Error404 from '../Error404'
 import Apollo from '../Apollo'
 import { routes } from '../common/constants'
-import '../modules/styles/global/styles.css'
+import '../modules/styles/global/styles.less'
 
 export default function Home() {
   return (

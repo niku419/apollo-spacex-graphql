@@ -29,22 +29,24 @@ export default function GetLaunchById() {
           {data.launch.mission_name}
         </Breadcrumb.Item>
       </Breadcrumb>
-      <div className="heading"><h1>Launch by ID</h1></div>
-      <Row className="center mar">
-        <div> {data.launch.links.flickr_images.map((imageLink, i) => (
-          <img key={i} src={imageLink} style={{height: "100px"}} alt="img"/>
-        ))}</div>
-        <div>
-          <Card loading={loading} key={data.launch.id}>
-            <h4>{data.launch.mission_name}</h4>
-            <div>{data.launch.details}</div>
-            <div>Ship name: {data.launch.ships.name}</div>
-            <div>Rocket name: {data.launch.rocket.rocket_name}</div>
-            <div>On {dateConvert(data.launch.launch_date_local)} from {data.launch.launch_site.site_name}</div>
-            <div>Video link: <a href={data.launch.links.video_link}>{data.launch.links.video_link}</a></div>
-          </Card>
-        </div>
-      </Row>
+      <div className="byID ">
+        <div className="heading"><h1>Launch by ID</h1></div>
+        <Row className="center mar">
+          <div> {data.launch.links.flickr_images.map((imageLink, i) => (
+            <img key={i} src={imageLink} style={{height: "100px"}} alt="img"/>
+          ))}</div>
+          <div>
+            <Card loading={loading} key={data.launch.id} className="IDCard">
+              <div className="heading"><h3>{data.launch.mission_name}</h3></div>
+              <div>{data.launch.details}</div>
+              <div>Ship name: {data.launch.ships.name}</div>
+              <div>Rocket name: {data.launch.rocket.rocket_name}</div>
+              <div>On {dateConvert(data.launch.launch_date_local)} from {data.launch.launch_site.site_name}</div>
+              <div>Video link: <a href={data.launch.links.video_link}>{data.launch.links.video_link}</a></div>
+            </Card>
+          </div>
+        </Row>
+      </div>
     </div>
   ) 
 }

@@ -16,14 +16,22 @@ export default function UserForm() {
   const [rocket, setRocket] = useState("")
   const [name, setName] = useState("")
   const [redirect, setRedirect] = useState(false)
+  const [disabled, setDisabled] = useState(false)
 
   async function handleSubmit(e){
+    setDisabled(true)
     if(userId){
       await editUser({ variables: { name, rocket, twitter, _eq: userId } })
-      return setRedirect(true)
+      .then(() => {
+        setDisabled(false)
+        setRedirect(true)
+      })
     }
     await addUser({ variables: { name, rocket, twitter }})
-    .then(() => setRedirect(true))
+    .then(() => {
+      setDisabled(false)
+      setRedirect(true)
+    })
     .catch(err => console.log(err))
   }
 
@@ -35,12 +43,15 @@ export default function UserForm() {
     }
   }, [data, userId])
 
-  if (loading) return (
-    <LoaderComponent/>
-  );
+  if (loading) {
+    return (
+    <div className="center"><LoaderComponent/></div>
+  )
+};
   if (error) return `error! ${error.message}`
   return (
     <div className="mar">
+      {redirect && <Redirect to='/users'/>}
       <Breadcrumb>
         <Breadcrumb.Item>
           <a href='/users'>Users</a>
@@ -50,53 +61,54 @@ export default function UserForm() {
         </Breadcrumb.Item>
       </Breadcrumb>
       <Layout>
-        {redirect && <Redirect to='/users'/>}
         <Layout.Content>
           <Divider>{userId ? 'Edit User' : 'Create User'}</Divider>
-          <Form
-            form={form}
-            layout="inline"
-            onFinish={handleSubmit}
-          >
-            <Form.Item 
-              label="Name" 
-              required 
-              tooltip="Add your name"
+          <div className="center">
+            <Form
+              form={form}
+              layout="inline"
+              onFinish={handleSubmit}
             >
-              <Input 
-                placeholder="Name"
-                value={name} 
-                onChange={(e) => setName(e.target.value)}
-              />
-            </Form.Item>
-            <Form.Item
-              label="Rocket"
-              tooltip={{ title: 'Name of the rocket '}}
-            >
-              <Input 
-                placeholder="Rocket Name"
-                value={rocket} 
-                onChange={(e) => setRocket(e.target.value)}
-              />
-            </Form.Item>
-            <Form.Item
-              name="url"
-              label="Your twitter URL"
-              rules={[
-                { type: 'url', warningOnly: true },
-                { type: 'string', min: 6 },
-              ]}
-            >
-              <Input 
-                placeholder="Twitter URL" 
-                value={twitter} 
-                onChange={(e) => setTwitter(e.target.value)}  
-              />
-            </Form.Item>
-            <Form.Item>
-              <Button type="submit" htmlType="submit">{userId ? 'Update' : 'Create'}</Button>
-            </Form.Item>
-          </Form>
+              <Form.Item 
+                label="Name" 
+                required 
+                tooltip="Add your name"
+              >
+                <Input 
+                  placeholder="Name"
+                  value={name} 
+                  onChange={(e) => setName(e.target.value)}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Rocket"
+                tooltip={{ title: 'Name of the rocket '}}
+              >
+                <Input 
+                  placeholder="Rocket Name"
+                  value={rocket} 
+                  onChange={(e) => setRocket(e.target.value)}
+                />
+              </Form.Item>
+              <Form.Item
+                name="url"
+                label="Your twitter URL"
+                rules={[
+                  { type: 'url', warningOnly: true },
+                  { type: 'string', min: 6 },
+                ]}
+              >
+                <Input 
+                  placeholder="Twitter URL" 
+                  value={twitter} 
+                  onChange={(e) => setTwitter(e.target.value)}  
+                />
+              </Form.Item>
+              <Form.Item>
+                <Button type="primary" disabled={disabled} htmlType="submit">{userId ? 'Update' : 'Create'}</Button>
+              </Form.Item>
+            </Form>
+          </div>
         </Layout.Content>
         <Divider/>
       </Layout>
