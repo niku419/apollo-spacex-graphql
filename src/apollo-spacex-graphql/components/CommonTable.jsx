@@ -1,5 +1,5 @@
 import { Table } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 const TableComponent = (props) => {
   const {
@@ -26,7 +26,7 @@ const TableComponent = (props) => {
   return (
     <Table
       columns={columns}
-      bordered={true} // by default false if want then pass true from props
+      bordered // by default false if want then pass true from props
       dataSource={dataSource}
       className={tableClassName}
       pagination={false} // for server side or client side pagination

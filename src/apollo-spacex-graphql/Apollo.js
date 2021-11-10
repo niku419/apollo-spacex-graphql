@@ -1,12 +1,9 @@
-import moment from 'moment'
-import React from 'react'
-import NavBar from './components/NavBar'
-import history from './historyData';
+import moment from 'moment';
+import React from 'react';
 import * as Sentry from '@sentry/browser';
 import { message } from 'antd';
 import { get, isObject } from 'lodash';
-import { onError } from '@apollo/client/link/error'
-import { defaultDateFormat } from './common/constants'
+import { onError } from '@apollo/client/link/error';
 import {
   ApolloClient,
   InMemoryCache,
@@ -14,13 +11,16 @@ import {
   ApolloLink,
   createHttpLink,
   from
-} from "@apollo/client"
+} from '@apollo/client';
+import { defaultDateFormat } from './common/constants';
+import history from './historyData';
+import NavBar from './components/NavBar';
 
-let disableToastTimeout = null
-export const cacheData = new InMemoryCache()
+let disableToastTimeout = null;
+export const cacheData = new InMemoryCache();
 export function dateConvert(date) {
-  return moment(date).format(defaultDateFormat)
-} 
+  return moment(date).format(defaultDateFormat);
+}
 const toast = ({ message: content, type }) => {
   message.destroy();
   switch (type) {
@@ -43,7 +43,7 @@ const toast = ({ message: content, type }) => {
 const httpLink = createHttpLink({
   uri: 'https://api.spacex.land/graphql/',
   credentials: 'same-origin'
-})
+});
 const responseMessageLink = new ApolloLink((operation, forward) => {
   return forward(operation).map((response) => {
     const { data } = response;
@@ -167,14 +167,13 @@ const errorLink = onError((options) => {
 export const client = new ApolloClient({
   link: from([responseMessageLink, errorLink, httpLink]),
   cache: cacheData
-})
+});
 
-export default function Apollo({children}) {
-
+export default function Apollo({ children }) {
   return (
     <ApolloProvider client={client}>
-        <NavBar/>
-        {children}
+      <NavBar />
+      {children}
     </ApolloProvider>
-  )
+  );
 }

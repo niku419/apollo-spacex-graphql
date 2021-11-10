@@ -6,8 +6,8 @@ export const routes = {
   EDIT_USER: '/users/:userId/edit',
   CREATE_USER: '/users/create',
   ROCKET_BY_ID: '/rockets/:rocketId',
-  LAUNCH_BY_ID: '/launches/:launchId' ,
+  LAUNCH_BY_ID: '/launches/:launchId',
   UPCOMING_LAUNCH_BY_ID: 'upcoming-launch/:launchId',
-  ERROR_404: "*"
-}
+  ERROR_404: '*'
+};
 export const defaultDateFormat = 'MM/DD/YYYY';

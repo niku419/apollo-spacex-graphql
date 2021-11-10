@@ -1,4 +1,4 @@
-import { gql } from '@apollo/client'
+import { gql } from '@apollo/client';
 
 export const ADD_USER = gql`
   mutation insert_users($name: String, $rocket: String, $twitter: String) {
@@ -11,12 +11,20 @@ export const ADD_USER = gql`
       }
     }
   }
-`
+`;
 
-export  const EDIT_USER = gql`
-  mutation update_users($_eq: uuid, $name: String, $rocket: String, $twitter: String) {
-    update_users(where : { id: { _eq: $_eq }}, _set: {name: $name, rocket: $rocket, twitter: $twitter }){
-      returning{
+export const EDIT_USER = gql`
+  mutation update_users(
+    $_eq: uuid
+    $name: String
+    $rocket: String
+    $twitter: String
+  ) {
+    update_users(
+      where: { id: { _eq: $_eq } }
+      _set: { name: $name, rocket: $rocket, twitter: $twitter }
+    ) {
+      returning {
         id
         name
         rocket
@@ -24,16 +32,16 @@ export  const EDIT_USER = gql`
       }
     }
   }
-`
+`;
 
 export const DELETE_USER = gql`
-  mutation delete_users($_eq: uuid){
-    delete_users(where: {id: {_eq : $_eq}}){
-      returning{ 
+  mutation delete_users($_eq: uuid) {
+    delete_users(where: { id: { _eq: $_eq } }) {
+      returning {
         name
         rocket
         twitter
       }
     }
   }
-`
+`;

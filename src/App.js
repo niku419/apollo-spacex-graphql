@@ -1,13 +1,14 @@
-import './App.less'
-import 'antd/dist/antd.less'
-import Home from './apollo-spacex-graphql/modules/Home'
+import React from 'react';
+import './App.less';
+import 'antd/dist/antd.less';
+import Home from './apollo-spacex-graphql/modules/Home';
 
 function App() {
   return (
     <div className="App">
-      <Home/>
+      <Home />
     </div>
-  )
+  );
 }
 
 export default App;

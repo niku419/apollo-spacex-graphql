@@ -8,7 +8,7 @@ const LoaderComponent = (props) => {
     children,
     setHeight = 100,
     ...rest
-  } = props
+  } = props;
 
   return (
     <Spin
@@ -22,6 +22,6 @@ const LoaderComponent = (props) => {
     >
       {children}
     </Spin>
-  )
-}
-export default LoaderComponent
+  );
+};
+export default LoaderComponent;
